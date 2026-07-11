@@ -1,6 +1,9 @@
 import { serverFetch } from "../core/server";
 
-// 1. Explicitly define the Doctor Object Interface matching your database projection
+// =========================================================================
+// 1. DATA MODEL SCHEMAS & UTILITY INTERFACES
+// =========================================================================
+
 export interface DoctorCardData {
   _id: string;
   name: string;
@@ -15,7 +18,43 @@ export interface DoctorCardData {
   };
 }
 
-// 2. Define the exact shape of the response returning from your Express server
+export interface DetailedDoctorSchema {
+  _id: string;
+  name: string;
+  title: string;
+  image: string;
+  specialty: string;
+  fee: number;
+  location: string;
+  isApproved: boolean | string;
+  biography: string;
+  experienceYears: number;
+  joinedAt: string;
+  patientSatisfactoryScore: {
+    averageRating: number;
+    totalReviewsCount: number;
+  };
+  availabilitySummary: string;
+  weeklySlots: {
+    day: "Saturday" | "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
+    startTime: string;
+    endTime: string;
+    maxPatientsAllowed: number;
+  }[];
+  reviews: {
+    reviewId: string;
+    patientName: string;
+    patientImage?: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+  }[];
+}
+
+// =========================================================================
+// 2. HTTP RESPONSE ENVELOPE DEFINITIONS
+// =========================================================================
+
 export interface GetDoctorsResponse {
   success: boolean;
   meta: {
@@ -27,20 +66,31 @@ export interface GetDoctorsResponse {
   data: DoctorCardData[];
 }
 
-// 3. Define arguments interface for strict filtering parameters
 export interface GetDoctorsParams {
   search?: string;
   specialty?: string;
   page?: number;
 }
 
+export interface SpecialtiesResponse {
+  success: boolean;
+  data: string[];
+}
+
+export interface GetDoctorDetailsResponse {
+  success: boolean;
+  data: DetailedDoctorSchema;
+}
+
+// =========================================================================
+// 3. API TRANSMISSION HANDLER METHODS
+// =========================================================================
+
 /**
  * Fetches a paginated list of approved doctors from the backend server.
  */
 export const fetchAllDoctors = async (params: GetDoctorsParams = {}): Promise<GetDoctorsResponse> => {
   const { search, specialty, page = 1 } = params;
-  
-  // Construct dynamic URL Search Query Parameters safely
   const queryParts: string[] = [`page=${page}`];
 
   if (search && search.trim() !== "") {
@@ -52,17 +102,19 @@ export const fetchAllDoctors = async (params: GetDoctorsParams = {}): Promise<Ge
   }
 
   const queryString = queryParts.join("&");
-  const endpoint = `doctors?${queryString}`;
-
-  // Call your core server fetch layout engine passing the expected response interface
-  return serverFetch<GetDoctorsResponse>(endpoint);
+  return serverFetch<GetDoctorsResponse>(`doctors?${queryString}`);
 };
 
-export interface SpecialtiesResponse {
-  success: boolean;
-  data: string[];
-}
-
+/**
+ * Fetches all unique specialties belonging to active approved doctors.
+ */
 export const fetchDoctorSpecialties = async (): Promise<SpecialtiesResponse> => {
   return serverFetch<SpecialtiesResponse>("doctors/specialties");
+};
+
+/**
+ * Fetches a single doctor's complete descriptive profile from the backend server by ID.
+ */
+export const fetchDoctorById = async (id: string): Promise<GetDoctorDetailsResponse> => {
+  return serverFetch<GetDoctorDetailsResponse>(`doctors/${id}`);
 };
