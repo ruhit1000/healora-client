@@ -3,14 +3,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "@/lib/auth-client";
+import { dashboardPathForRole, normalizeRole } from "@/lib/roles";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const pathname = usePathname();
+  const { data: session, isPending: isSessionPending } = useSession();
 
-  // TODO: Replace this with your actual auth state hook later (e.g., NextAuth or custom JWT hook)
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const isLoggedIn = Boolean(session?.user);
+  const userRole = normalizeRole((session?.user as { role?: unknown } | undefined)?.role);
 
   // Handle glassmorphism background effect on scroll
   useEffect(() => {
@@ -25,11 +29,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on path changes
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
   // Dynamic Route Definitions matching PRD requirements
   const loggedOutLinks = [
     { name: "Home", href: "/" },
@@ -42,11 +41,17 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "Explore Doctors", href: "/doctors" },
     { name: "About Us", href: "/about" },
-    { name: "Patient Dashboard", href: "/dashboard" },
+    { name: "Dashboard", href: dashboardPathForRole(userRole) },
     { name: "Telehealth Support", href: "/support" },
   ];
 
   const currentLinks = isLoggedIn ? loggedInLinks : loggedOutLinks;
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    await signOut();
+    setIsSigningOut(false);
+  };
 
   return (
     <nav
@@ -90,35 +95,28 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {isLoggedIn ? (
               <button
-                onClick={() => setIsLoggedIn(false)}
+                onClick={handleSignOut}
+                disabled={isSigningOut || isSessionPending}
                 className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-brand-primary transition-colors duration-200"
               >
-                Sign Out
+                {isSigningOut ? "Signing Out..." : "Sign Out"}
               </button>
             ) : (
               <>
                 <Link
-                  href="/login"
+                  href={isSessionPending ? "#" : "/login"}
                   className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-brand-primary transition-colors duration-200"
                 >
                   Login
                 </Link>
                 <Link
-                  href="/register"
+                  href={isSessionPending ? "#" : "/register"}
                   className="px-4 py-2 text-sm font-medium text-white bg-brand-primary hover:bg-brand-primary/90 rounded-healora shadow-sm transition-all duration-200"
                 >
                   Sign Up
                 </Link>
               </>
             )}
-            
-            {/* Developer Shortcut: Temporary Login State Toggle Switch */}
-            <button 
-              onClick={() => setIsLoggedIn(!isLoggedIn)} 
-              className="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-sm opacity-50 hover:opacity-100"
-            >
-              Dev Toggle Auth
-            </button>
           </div>
 
           {/* Responsive Mobile Menu Button Toggle */}
@@ -167,10 +165,11 @@ export default function Navbar() {
           <div className="pt-4 pb-2 border-t border-slate-100 px-3 flex flex-col space-y-2">
             {isLoggedIn ? (
               <button
-                onClick={() => setIsLoggedIn(false)}
+                onClick={handleSignOut}
+                disabled={isSigningOut || isSessionPending}
                 className="w-full text-center px-4 py-2 text-base font-medium text-slate-700 bg-slate-50 rounded-healora"
               >
-                Sign Out
+                {isSigningOut ? "Signing Out..." : "Sign Out"}
               </button>
             ) : (
               <>
