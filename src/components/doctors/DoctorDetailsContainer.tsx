@@ -188,6 +188,7 @@ export default function DoctorDetailsContainer({ doctor, currentUser }: DoctorDe
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         doctor={doctor}
+        currentUser={currentUser}
       />
     </div>
   );
