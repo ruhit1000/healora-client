@@ -42,7 +42,7 @@ export default function Navbar() {
     { name: "Explore Doctors", href: "/doctors" },
     { name: "About Us", href: "/about" },
     { name: "Dashboard", href: dashboardPathForRole(userRole) },
-    { name: "Telehealth Support", href: "/support" },
+    { name: "Health Plans", href: "/health-plans" },
   ];
 
   const currentLinks = isLoggedIn ? loggedInLinks : loggedOutLinks;

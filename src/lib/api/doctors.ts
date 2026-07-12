@@ -19,6 +19,11 @@ export interface DoctorCardData {
 }
 
 export interface DetailedDoctorSchema {
+  experienceTimeline: {
+    institution: string;
+    role: string;
+    period: string;
+  }[];
   _id: string;
   name: string;
   title: string;

@@ -2,142 +2,193 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@heroui/react";
 import { DetailedDoctorSchema } from "@/lib/api/doctors";
+import BookingModal from "./BookingModal";
+
+// Accurately typing your user session object
+interface CurrentUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 interface DoctorDetailsContainerProps {
   doctor: DetailedDoctorSchema;
+  currentUser?: CurrentUser | null;
 }
 
-export default function DoctorDetailsContainer({ doctor }: DoctorDetailsContainerProps) {
-  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
+type TabType = "info" | "experience" | "reviews";
 
-  const handleBookingExecution = () => {
-    if (selectedSlotIndex === null) return;
-    const chosenSlot = doctor.weeklySlots[selectedSlotIndex];
-    alert(`Initiating scheduling sequence for ${doctor.name} on ${chosenSlot.day} at ${chosenSlot.startTime}`);
+export default function DoctorDetailsContainer({ doctor, currentUser }: DoctorDetailsContainerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState<TabType>("info");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // The Gatekeeper Logic
+  const handleCTAAction = () => {
+    if (!currentUser || !currentUser.id) {
+      const redirectParams = new URLSearchParams({ callbackUrl: pathname });
+      router.push(`/login?${redirectParams.toString()}`);
+      return;
+    }
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
+    <div className="max-w-6xl mx-auto space-y-8">
+
       {/* ==========================================
-          COLUMN 1: MASTER PROFILE DETAILS FEED (8 COLS)
+          HEADER HERO CARD PANEL
           ========================================== */}
-      <main className="lg:col-span-8 space-y-6">
-        
-        {/* HEROBIOGRAPHY BRIEFING BLOCK */}
-        <section className="bg-white p-6 rounded-healora border border-slate-100 shadow-xs flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-          
-          {/* STATIC LAYOUT CONSTRAINT BOUNDARY FRAME */}
-          <div className="w-44 h-44 bg-slate-50 rounded-xl overflow-hidden shrink-0 relative block mx-auto sm:mx-0">
-            <Image 
-              src={doctor.image} 
-              alt={doctor.name} 
+      <header className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative">
+        <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center flex-1">
+          <div className="w-36 h-36 bg-slate-50 rounded-2xl overflow-hidden shrink-0 relative border border-slate-100">
+            <Image
+              src={doctor.image}
+              alt={doctor.name}
               fill
-              sizes="176px"
+              sizes="144px"
               priority
               className="object-cover object-top"
             />
+            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow-xs">
+              Online
+            </span>
           </div>
-          
-          {/* TYPOGRAPHY CONTENT REGISTER */}
-          <div className="flex flex-col justify-between py-1 space-y-3 flex-1 w-full text-center sm:text-left">
+
+          <div className="space-y-3 flex-1">
             <div className="space-y-1">
+              <h1 className="text-xl font-black text-slate-800 tracking-tight">{doctor.name}</h1>
+              <p className="text-xs text-slate-500 font-semibold">{doctor.title}</p>
               <span className="bg-brand-primary/10 text-brand-primary px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider inline-block">
                 {doctor.specialty}
               </span>
-              <h1 className="text-xl font-black text-neutral-text tracking-tight pt-1">{doctor.name}</h1>
-              <p className="text-xs text-slate-500 font-semibold">{doctor.title}</p>
             </div>
-            
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2 text-xs font-bold text-slate-600">
-              <span>📍 {doctor.location}</span>
-              <span>💼 {doctor.experienceYears} Years Active</span>
-              <span>⭐ {doctor.patientSatisfactoryScore?.averageRating || "N/A"} ({doctor.patientSatisfactoryScore?.totalReviewsCount || 0} reviews)</span>
+
+            <div className="grid grid-cols-3 gap-4 max-w-sm border-t border-slate-50 pt-3">
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Experience</p>
+                <p className="text-xs font-black text-slate-700">{doctor.experienceYears}+ Years</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Total Rating</p>
+                <p className="text-xs font-black text-slate-700">⭐ {doctor.patientSatisfactoryScore?.averageRating || "0.0"} ({doctor.patientSatisfactoryScore?.totalReviewsCount || 0})</p>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* COMPREHENSIVE NARRATIVE FIELD */}
-        <section className="bg-white p-6 rounded-healora border border-slate-100 shadow-xs space-y-3">
-          <h2 className="text-sm font-black text-neutral-text uppercase tracking-tight">Biography Overview</h2>
-          <p className="text-xs leading-relaxed text-slate-500 font-medium whitespace-pre-line">
-            {doctor.biography || "No diagnostic practice layout parameters provided by medical registrar."}
-          </p>
-        </section>
-
-        {/* REVIEWS GRID RECORDS */}
-        <section className="bg-white p-6 rounded-healora border border-slate-100 shadow-xs space-y-4">
-          <h2 className="text-sm font-black text-neutral-text uppercase tracking-tight">
-            Patient Feedback ({doctor.reviews?.length || 0})
-          </h2>
-          {(!doctor.reviews || doctor.reviews.length === 0) ? (
-            <p className="text-xs text-slate-400 font-medium py-2">No consumer review evaluations listed yet.</p>
-          ) : (
-            <div className="divide-y divide-slate-100">
-              {doctor.reviews.map((rev) => (
-                <div key={rev.reviewId} className="py-4 first:pt-0 last:pb-0 space-y-1.5">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-xs font-black text-slate-700">{rev.patientName}</span>
-                    <span className="text-[10px] text-brand-primary font-bold">⭐ {rev.rating}.0 / 5.0</span>
-                  </div>
-                  <p className="text-xs text-slate-500 font-medium leading-relaxed">{rev.comment}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      </main>
+        {/* SIDE TRANSACTION BLOCK */}
+        <div className="w-full md:w-auto flex flex-col items-center md:items-end gap-2 border-t md:border-t-0 border-slate-100 pt-4 md:pt-0 min-w-50">
+          <div className="text-center md:text-right">
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-wider">Consultation Fee</p>
+            <p className="text-2xl font-black text-brand-primary">৳{doctor.fee} <span className="text-[10px] text-slate-400 font-normal">(Inc. VAT)</span></p>
+          </div>
+          <Button
+            className="w-full bg-brand-primary text-white font-black text-xs py-5 rounded-xl transition-all cursor-pointer shadow-xs"
+            onPress={handleCTAAction}
+          >
+            Book Now
+          </Button>
+        </div>
+      </header>
 
       {/* ==========================================
-          COLUMN 2: STICKY TRANSACTIONAL SCHEDULER SIDEBAR (4 COLS)
+          NAVIGATIONAL LAYOUT SECTIONS GRID
           ========================================== */}
-      <aside className="lg:col-span-4 bg-white rounded-healora border border-slate-100 shadow-xs overflow-hidden sticky top-32 space-y-5 p-6 w-full">
-        <div>
-          <h3 className="text-[10px] text-slate-400 font-black uppercase tracking-wider">Consultation Session Fee</h3>
-          <p className="text-2xl font-black text-neutral-text pt-0.5">৳ {doctor.fee}</p>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <main className="lg:col-span-8 space-y-6">
 
-        <hr className="border-slate-100" />
-
-        <div className="space-y-2.5">
-          <h4 className="text-xs font-black text-slate-700 uppercase tracking-tight">Available Consultation Slots</h4>
-          {(!doctor.weeklySlots || doctor.weeklySlots.length === 0) ? (
-            <p className="text-xs text-slate-400 font-semibold">No booking calendar allocations mapped for this week.</p>
-          ) : (
-            <div className="grid grid-cols-1 gap-2">
-              {doctor.weeklySlots.map((slot, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setSelectedSlotIndex(index)}
-                  className={`w-full text-left p-3 border rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                    selectedSlotIndex === index
-                      ? "border-brand-primary bg-brand-primary/5 text-brand-primary font-bold"
-                      : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+          {/* TAB SWITCH BAR */}
+          <nav className="flex gap-6 border-b border-slate-200 text-xs font-bold">
+            {(["info", "experience", "reviews"] as TabType[]).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`pb-3 capitalize transition-all cursor-pointer relative ${activeTab === tab ? "text-brand-primary font-black" : "text-slate-400 hover:text-slate-600"
                   }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>📅 {slot.day}</span>
-                    <span className="text-[11px] opacity-95">{slot.startTime} - {slot.endTime}</span>
+              >
+                {tab}
+                {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary rounded-full" />}
+              </button>
+            ))}
+          </nav>
+
+          {/* TAB CANVAS CONTENT BLOCK */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs min-h-62.5">
+            {activeTab === "info" && (
+              <section className="space-y-3 animate-fadeIn">
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-tight">About Doctor</h2>
+                <p className="text-xs leading-relaxed text-slate-500 font-medium whitespace-pre-line">{doctor.biography}</p>
+                <p className="text-xs text-slate-400 pt-2 font-medium">📍 Serving Chamber Location: <span className="text-slate-600 font-bold">{doctor.location}</span></p>
+              </section>
+            )}
+
+            {activeTab === "experience" && (
+              <section className="space-y-4 animate-fadeIn">
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-tight">Employment History</h2>
+                {(!doctor.experienceTimeline || doctor.experienceTimeline.length === 0) ? (
+                  <p className="text-xs text-slate-400 font-medium">No experience history mapped yet.</p>
+                ) : (
+                  <div className="space-y-4 relative border-l-2 border-slate-100 pl-4 ml-2">
+                    {doctor.experienceTimeline.map((exp: { period: string; role: string; institution: string }, idx: number) => (
+                      <div key={idx} className="relative space-y-0.5">
+                        <div className="absolute -left-5.25 top-1 w-2.5 h-2.5 bg-brand-primary rounded-full ring-4 ring-white" />
+                        <span className="text-[10px] text-brand-primary font-bold">{exp.period}</span>
+                        <h4 className="text-xs font-black text-slate-700">{exp.role}</h4>
+                        <p className="text-xs text-slate-400 font-medium">{exp.institution}</p>
+                      </div>
+                    ))}
                   </div>
-                </button>
-              ))}
+                )}
+              </section>
+            )}
+
+            {activeTab === "reviews" && (
+              <section className="space-y-4 animate-fadeIn">
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-tight">Patient Reviews ({doctor.reviews?.length || 0})</h2>
+                <div className="divide-y divide-slate-50">
+                  {doctor.reviews?.map((rev) => (
+                    <div key={rev.reviewId} className="py-4 first:pt-0 last:pb-0 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-black text-slate-700">{rev.patientName}</span>
+                        <span className="text-[10px] text-amber-500 font-bold">⭐ {rev.rating}.0 / 5.0</span>
+                      </div>
+                      <p className="text-xs text-slate-500 font-medium">{rev.comment}</p>
+                      <span className="text-[9px] text-slate-400 font-semibold block pt-1">{rev.createdAt}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        </main>
+
+        {/* SIDE BAR LEDGER */}
+        <aside className="lg:col-span-4 space-y-4">
+          <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-4">
+            <h3 className="text-xs font-black text-slate-800 uppercase tracking-tight">At a Glance</h3>
+            <div className="space-y-3 text-xs font-medium">
+              <div className="bg-slate-50 p-3 rounded-xl space-y-1">
+                <p className="text-[10px] text-slate-400 font-bold uppercase">Consultation Fee</p>
+                <p className="text-sm font-black text-slate-700">৳{doctor.fee}</p>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        </aside>
+      </div>
 
-        <Button
-          variant="primary"
-          className="w-full font-bold text-xs py-5 rounded-xl shadow-xs disabled:opacity-50 cursor-pointer"
-          isDisabled={selectedSlotIndex === null}
-          onPress={handleBookingExecution}
-        >
-          {selectedSlotIndex !== null ? "Proceed to Appointment" : "Select an Open Slot"}
-        </Button>
-      </aside>
-
+      {/* THE MODAL SHELL */}
+      <BookingModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        doctor={doctor}
+      />
     </div>
   );
 }
