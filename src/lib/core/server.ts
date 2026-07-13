@@ -47,9 +47,17 @@ export const serverFetch = async <T = unknown>(path: string): Promise<T> => {
 };
 
 export const protectedFetch = async <T = unknown>(path: string): Promise<T> => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
+
   const res = await fetch(`${baseUrl}/api/${path}`, {
     cache: "no-store",
     headers: await authHeader(),
   });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || `HTTP error! Status: ${res.status}`);
+  }
+
   return res.json();
 };
