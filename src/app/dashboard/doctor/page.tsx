@@ -19,6 +19,7 @@ import {
 } from "@heroui/react";
 import { CircleFill } from "@gravity-ui/icons";
 import { FiCalendar, FiCheckCircle, FiDollarSign, FiVideo, FiAlertOctagon, FiClock } from "react-icons/fi";
+import Link from "next/link";
 
 export default function DoctorDashboardPage() {
   const router = useRouter();
@@ -93,15 +94,26 @@ export default function DoctorDashboardPage() {
 
       {/* UNVERIFIED WARNING BANNER */}
       {!isApproved && (
-        <Card className="border border-amber-200 bg-amber-50/40 rounded-2xl">
-          <div className="flex flex-row items-start gap-4 p-5">
-            <FiAlertOctagon className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <h4 className="text-xs font-black text-amber-800 uppercase tracking-wider">Credentials Under Audit</h4>
-              <p className="text-xs font-medium text-amber-700 leading-relaxed">
-                Your medical registration files are currently undergoing verification pipelines. Public profile visible and live bookings will fully unlock upon verification completion.
-              </p>
+        <Card className="border border-amber-200 bg-amber-50/40 rounded-2xl shadow-none">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 p-5">
+            <div className="flex flex-row items-start gap-4">
+              <FiAlertOctagon className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <h4 className="text-xs font-black text-amber-800 uppercase tracking-wider">
+                  Credentials Under Audit & Profile Incomplete
+                </h4>
+                <p className="text-xs font-medium text-amber-700 leading-relaxed max-w-2xl">
+                  Your registration files are currently undergoing verification pipelines. To appear in public search registries and fully unlock live online bookings, you must complete your practitioner profile configuration.
+                </p>
+              </div>
             </div>
+
+            <Link
+              href="/dashboard/doctor/profile"
+              className="text-xs font-black uppercase tracking-wider text-amber-800 hover:text-amber-950 underline shrink-0 mt-1 sm:mt-0 self-start sm:self-center transition-colors"
+            >
+              Complete Profile →
+            </Link>
           </div>
         </Card>
       )}
