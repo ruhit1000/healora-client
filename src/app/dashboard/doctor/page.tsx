@@ -9,13 +9,7 @@ import { BeatLoader } from "react-spinners";
 import {
   Card,
   Button,
-  Chip,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell
+  Chip
 } from "@heroui/react";
 import { CircleFill } from "@gravity-ui/icons";
 import { FiCalendar, FiCheckCircle, FiDollarSign, FiVideo, FiAlertOctagon, FiClock } from "react-icons/fi";
@@ -161,39 +155,42 @@ export default function DoctorDashboardPage() {
       <div className="space-y-4">
         <h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">Today's Clinical Intake Queue</h2>
 
-        {queueList.length > 0 ? (
-          <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
-            <Table aria-label="Clinical Queue Table Matrix">
-              <TableHeader>
-                <TableColumn className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Patient Details</TableColumn>
-                <TableColumn className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Time Window</TableColumn>
-                <TableColumn className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Reason / Complaint</TableColumn>
-                <TableColumn className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Booking Status</TableColumn>
-                <TableColumn className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200 text-right">Actions</TableColumn>
-              </TableHeader>
-              <TableBody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
+        <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white overflow-x-auto">
+          {queueList.length > 0 ? (
+            <table className="w-full text-left whitespace-nowrap">
+              <thead>
+                <tr>
+                  <th className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Patient Details</th>
+                  <th className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Time Window</th>
+                  <th className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Reason / Complaint</th>
+                  <th className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200">Booking Status</th>
+                  <th className="bg-slate-50 text-slate-400 font-black text-xs px-6 py-4 border-b border-slate-200 text-right">Actions</th>
+                </tr>
+              </thead>
+              
+              <tbody className="divide-y divide-slate-100 text-xs font-bold text-slate-700">
                 {queueList.map((appt) => (
-                  <TableRow key={appt._id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-b-0">
+                  <tr key={appt._id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-b-0">
 
-                    <TableCell className="px-6 py-4">
+                    <td className="px-6 py-4">
                       <div>
                         <p className="font-black text-slate-900 text-xs">{appt.patientDetails.patientName}</p>
                         <p className="text-[10px] text-slate-400 font-bold mt-1">{appt.patientDetails.age} yrs • {appt.patientDetails.gender}</p>
                       </div>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="px-6 py-4">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-slate-900 font-black">
                         <FiClock className="w-3.5 h-3.5 text-slate-400" />
                         <span>{appt.appointmentTime}</span>
                       </div>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="px-6 py-4 max-w-xs font-medium text-slate-500 truncate">
+                    <td className="px-6 py-4 max-w-xs font-medium text-slate-500 truncate">
                       {appt.patientDetails.reasonForVisit || "Routine General Assessment"}
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="px-6 py-4">
+                    <td className="px-6 py-4">
                       <Chip
                         color={
                           appt.bookingStatus === "Completed" ? "success" :
@@ -201,11 +198,11 @@ export default function DoctorDashboardPage() {
                         }
                         variant="soft"
                       >
-                        <Chip.Label>{appt.bookingStatus}</Chip.Label>
+                        {appt.bookingStatus}
                       </Chip>
-                    </TableCell>
+                    </td>
 
-                    <TableCell className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right">
                       {appt.bookingStatus === "Confirmed" ? (
                         <Button
                           variant="primary"
@@ -219,23 +216,21 @@ export default function DoctorDashboardPage() {
                           Archived / Closed
                         </span>
                       )}
-                    </TableCell>
+                    </td>
 
-                  </TableRow>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : (
-          <Card className="border border-slate-200 border-dashed rounded-2xl py-16">
-            <div className="text-center space-y-2 p-6">
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center space-y-2 p-12">
               <p className="text-sm font-black text-slate-800">Your queue timeline is empty</p>
               <p className="text-xs font-medium text-slate-400 max-w-xs mx-auto">
                 No active or scheduled consultations are mapped to your calendar system today.
               </p>
             </div>
-          </Card>
-        )}
+          )}
+        </div>
       </div>
 
     </div>
