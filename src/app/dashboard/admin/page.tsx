@@ -20,7 +20,6 @@ export default function AdminDashboardPage() {
   const [data, setData] = useState<AdminOverviewData | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(true);
 
-  // Unified Security & Data Fetching Effect
   useEffect(() => {
     if (isAuthPending) return;
 
@@ -35,10 +34,8 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    // Role is verified Admin, proceed to fetch sensitive data
     const loadData = async () => {
       const result = await getAdminOverview();
-      console.log("Admin Overview Data:", result); // Debugging log
       if (result) setData(result);
       setIsDataLoading(false);
     };
