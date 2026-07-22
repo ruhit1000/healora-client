@@ -1,8 +1,8 @@
-# 🩺 CareSlot – Full-Stack Doctor Appointment & Scheduling Platform
+# 🩺 Healora – Full-Stack Doctor Appointment & Scheduling Platform
 
-CareSlot is a modern, secure, and scalable doctor appointment booking platform that connects patients with verified healthcare professionals through an intuitive online experience. The platform streamlines appointment scheduling, prevents double bookings through a concurrency control system, and provides dedicated dashboards for patients, doctors, and administrators.
+Healora is a modern, secure, and scalable doctor appointment booking platform that connects patients with verified healthcare professionals through an intuitive online experience. The platform streamlines appointment scheduling, prevents double bookings through a concurrency control system, and provides dedicated dashboards for patients, doctors, and administrators.
 
-Designed with scalability, security, and user experience in mind, CareSlot leverages Next.js, TypeScript, MongoDB, and modern web technologies to deliver a seamless healthcare management solution.
+Designed with scalability, security, and user experience in mind, Healora leverages Next.js, TypeScript, MongoDB, and modern web technologies to deliver a seamless healthcare management solution.
 
 ---
 
@@ -208,7 +208,7 @@ Designed with scalability, security, and user experience in mind, CareSlot lever
 
 # 🚀 Concurrency Control
 
-CareSlot implements a slot-locking mechanism to eliminate double booking.
+Healora implements a slot-locking mechanism to eliminate double booking.
 
 ### Booking Flow
 
@@ -264,13 +264,13 @@ This approach ensures that multiple users cannot reserve the same appointment si
 Clone the repository
 
 ```bash
-git clone https://github.com/your-username/careslot.git
+git clone https://github.com/your-username/Healora.git
 ```
 
 Move into the project
 
 ```bash
-cd careslot
+cd Healora
 ```
 
 Install dependencies
