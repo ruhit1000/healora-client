@@ -4,9 +4,11 @@
 @theme {
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-primary: #0284c7;   /* Sky Blue */
-  --color-brand-accent: #0d9488;    /* Teal */
-  --color-brand-cta: #f59e0b;       /* Amber */
+  --color-brand-primary: #0369a1;   /* Sky Blue 700 - Better contrast */
+  --color-brand-primary-hover: #0284c7; /* Sky Blue 600 */
+  --color-brand-accent: #0f766e;    /* Teal 700 - Better contrast */
+  --color-brand-accent-hover: #0d9488; /* Teal 600 */
+  --color-brand-cta: #d97706;       /* Amber 600 */
   
   --color-neutral-bg: #f8fafc;      /* Slate-50  */
   --color-neutral-text: #0f172a;    /* Slate-900 */

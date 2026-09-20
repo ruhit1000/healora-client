@@ -9,6 +9,7 @@ import { getPatientOverview, DashboardOverviewData } from "@/lib/api/overview";
 import { FiCalendar, FiCheckCircle, FiDollarSign, FiClock, FiUser, FiArrowRight } from "react-icons/fi";
 import Image from "next/image";
 import { BeatLoader } from "react-spinners";
+import { Button } from "@/components/shared/Button";
 
 export default function PatientDashboardPage() {
   const router = useRouter();
@@ -168,16 +169,16 @@ export default function PatientDashboardPage() {
                 </p>
               </div>
 
-              <button className="w-full py-3 bg-brand-primary text-white text-xs font-black rounded-xl transition-all hover:bg-brand-primary/95 shadow-sm">
+              <Button variant="primary" className="w-full font-black">
                 Enter Telemedicine Chamber
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="bg-white border border-slate-200 border-dashed rounded-2xl p-8 text-center space-y-4">
               <p className="text-xs font-bold text-slate-400 leading-relaxed">You have no active or scheduled doctor visits mapped at the moment.</p>
-              <Link href="/doctors" className="inline-flex items-center gap-2 text-xs font-black text-brand-primary hover:underline">
+              <Button href="/doctors" variant="ghost" className="font-black px-0 flex items-center gap-2 disableRipple">
                 Find a Doctor <FiArrowRight />
-              </Link>
+              </Button>
             </div>
           )}
         </div>

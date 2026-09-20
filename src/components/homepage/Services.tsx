@@ -1,5 +1,7 @@
 import React from "react";
 import Link from "next/link";
+import { Card, CardBody } from "@/components/shared/Card";
+import { Button } from "@/components/shared/Button";
 
 interface ServiceItem {
   icon: React.ReactNode;
@@ -68,44 +70,48 @@ export default function Services() {
         {/* Services Card Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {servicesList.map((service, idx) => (
-            <div 
+            <Card 
               key={idx}
-              className="bg-white border border-slate-100 p-8 rounded-healora shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+              className="hover:border-brand-primary/20 transition-all duration-300"
             >
-              <div>
-                {/* Icon Wrapper Circle */}
-                <div className={`p-3 inline-block rounded-xl mb-6 ${service.accentColor}`}>
-                  {service.icon}
+              <CardBody className="p-8 flex flex-col justify-between h-full">
+                <div>
+                  {/* Icon Wrapper Circle */}
+                  <div className={`p-3 inline-block rounded-xl mb-6 ${service.accentColor}`}>
+                    {service.icon}
+                  </div>
+
+                  {/* Service Heading and Body Context */}
+                  <h3 className="text-xl font-bold text-neutral-text mb-3 tracking-tight group-hover:text-brand-primary transition-colors duration-200">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                    {service.description}
+                  </p>
                 </div>
 
-                {/* Service Heading and Body Context */}
-                <h3 className="text-xl font-bold text-neutral-text mb-3 tracking-tight">
-                  {service.title}
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6">
-                  {service.description}
-                </p>
-              </div>
-
-              {/* Action Button Link matching PRD layout guidelines */}
-              <div>
-                <Link
-                  href={service.actionHref}
-                  className="inline-flex items-center text-sm font-semibold text-brand-primary hover:text-brand-primary/80 group transition-colors duration-200"
-                >
-                  <span>{service.actionText}</span>
-                  <svg 
-                    className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform duration-200" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor" 
-                    strokeWidth="2.5"
+                {/* Action Button Link matching PRD layout guidelines */}
+                <div>
+                  <Button
+                    href={service.actionHref}
+                    variant="ghost"
+                    className="px-0 font-semibold group flex items-center justify-start h-auto"
+                    disableRipple
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
+                    <span>{service.actionText}</span>
+                    <svg 
+                      className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform duration-200" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor" 
+                      strokeWidth="2.5"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Button>
+                </div>
+              </CardBody>
+            </Card>
           ))}
         </div>
 

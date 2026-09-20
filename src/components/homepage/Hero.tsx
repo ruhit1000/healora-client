@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/shared/Button";
 import HeroSlider from "./HeroSlider";
 
 export default function Hero() {
@@ -46,18 +47,22 @@ export default function Hero() {
 
           {/* CTA Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-2">
-            <Link
+            <Button
               href="/doctors"
-              className="w-full sm:w-auto text-center px-8 py-3.5 text-sm font-semibold text-white bg-brand-primary hover:bg-brand-primary/90 rounded-healora shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
+              variant="primary"
+              size="lg"
+              className="w-full sm:w-auto shadow-md hover:shadow-lg font-bold"
             >
               Find Your Doctor
-            </Link>
-            <Link
+            </Button>
+            <Button
               href="/about"
-              className="w-full sm:w-auto text-center px-8 py-3.5 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-healora border border-slate-200 shadow-sm transition-all duration-200"
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto font-bold border-slate-200"
             >
               Learn More
-            </Link>
+            </Button>
           </div>
         </div>
 
